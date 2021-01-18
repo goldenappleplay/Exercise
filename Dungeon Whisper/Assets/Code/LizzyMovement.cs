@@ -11,7 +11,7 @@ public class LizzyMovement : MonoBehaviour
     internal LayerMask groundLayer;
     private float direction;
     private float x_Axis, y_Axis;
-    private bool isJumpPressed;
+    private bool isJumpPressed, isGrounded;
 
 
     const string Player_Idle = "Idle_L";
@@ -39,13 +39,14 @@ public class LizzyMovement : MonoBehaviour
         {
             isJumpPressed = true;
         }
-
+        Debug.Log(isGrounded);
        
     }
 
     private void FixedUpdate()
     {
-        //CheckIfIsGrounded();
+        
+        CheckIfIsGrounded();
         
         
         if (x_Axis > 0)
@@ -60,25 +61,33 @@ public class LizzyMovement : MonoBehaviour
         }
                
 
-        if (isJumpPressed == true && CheckIfIsGrounded() == true)
+        if (isJumpPressed == true && isGrounded)
         {
             rigidBody.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
             isJumpPressed = false;
             ChangeAnimationState(Player_Jump);
         }
 
+        if (true)
+        {
+
+        }
+
     }
 
     private void LateUpdate()
     {
-        if (x_Axis != 0)
+        if (isGrounded == true)
         {
-            ChangeAnimationState(Player_Run);
-        }
-        else
-        {
-            ChangeAnimationState(Player_Idle);
-        }
+            if (x_Axis != 0)
+            {
+                ChangeAnimationState(Player_Run);
+            }
+            else
+            {
+                ChangeAnimationState(Player_Idle);
+            }
+        }       
     }
 
     private void ChangeAnimationState(string newState)
@@ -93,8 +102,8 @@ public class LizzyMovement : MonoBehaviour
 
     internal bool CheckIfIsGrounded()
     {
-        RaycastHit2D rayCastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
-
-        return rayCastHit.collider != null;
+        RaycastHit2D rayCastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.2f, groundLayer);
+        isGrounded = rayCastHit.collider;
+        return isGrounded;
     }
 }
