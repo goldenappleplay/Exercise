@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class LizzyMovement : MonoBehaviour
 {
-    [SerializeField] private float speed;
+    [SerializeField] private float speed, jumpHeight;
     [SerializeField] private Rigidbody2D rigidBody;
+    [SerializeField] private Collider2D playerCollider;
     [SerializeField] private Animator animator;
-
+    internal LayerMask groundLayer;
     private float direction;
     private float x_Axis, y_Axis;
     private bool isJumpPressed;
@@ -15,7 +16,7 @@ public class LizzyMovement : MonoBehaviour
 
     const string Player_Idle = "Idle_L";
     const string Player_Run = "Run_L";
-    const string Player_Jump = "Jumo";
+    const string Player_Jump = "Jump";
     const string Player_Fall = "Falling";
     const string Player_Land = "Landing";
     const string Player_Stop = "Stopping";
@@ -26,7 +27,7 @@ public class LizzyMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        groundLayer = LayerMask.GetMask("Ground");
     }
 
     // Update is called once per frame
@@ -44,6 +45,9 @@ public class LizzyMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //CheckIfIsGrounded();
+        
+        
         if (x_Axis > 0)
         {
             rigidBody.velocity = new Vector2(speed, rigidBody.velocity.y);
@@ -54,6 +58,15 @@ public class LizzyMovement : MonoBehaviour
             rigidBody.velocity = new Vector2(-speed, rigidBody.velocity.y);
             transform.localScale = new Vector2(1, 1);
         }
+               
+
+        if (isJumpPressed == true && CheckIfIsGrounded() == true)
+        {
+            rigidBody.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
+            isJumpPressed = false;
+            ChangeAnimationState(Player_Jump);
+        }
+
     }
 
     private void LateUpdate()
@@ -76,5 +89,12 @@ public class LizzyMovement : MonoBehaviour
         }
         animator.Play(newState);
         currentState = newState;
+    }
+
+    internal bool CheckIfIsGrounded()
+    {
+        RaycastHit2D rayCastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0f, Vector2.down, 0.1f, groundLayer);
+
+        return rayCastHit.collider != null;
     }
 }

@@ -302,7 +302,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 6
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
@@ -321,7 +321,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 8
+  jumpHeight: 30
   rigidBody: {fileID: 467605105}
+  playerCollider: {fileID: 467605104}
   animator: {fileID: 1654649286}
 --- !u!4 &467605107
 Transform:
@@ -1255,8 +1257,8 @@ MonoBehaviour:
   - {fileID: 136009901}
   - {fileID: 342302637}
   m_Bounds:
-    m_Center: {x: 0.21367556, y: 0.06698203, z: 0}
-    m_Extent: {x: 0.84217405, y: 1.2815824, z: 0}
+    m_Center: {x: 0.25718024, y: 0.06936228, z: 0}
+    m_Extent: {x: 0.6927086, y: 1.3227179, z: 0}
   m_UseBatching: 1
   m_AlwaysUpdate: 1
 --- !u!212 &1654649284
