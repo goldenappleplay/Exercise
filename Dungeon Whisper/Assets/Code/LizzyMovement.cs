@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,21 +15,22 @@ public class LizzyMovement : MonoBehaviour
     private bool isJumpPressed, isGrounded;
 
 
-    private int Player_Idle = Animator.StringToHash("Idle_L");
-    private int Player_Run = Animator.StringToHash("Run_L");
-    private int Player_Jump = Animator.StringToHash("Jump");
-    private int Player_Fall = Animator.StringToHash("Falling");
-    private int Player_Land = Animator.StringToHash("Landing");
-    private int Player_Stop = Animator.StringToHash("Stopping");
+    //private int Player_Idle = Animator.StringToHash("Idle_L");
+    //private int Player_Run = Animator.StringToHash("Run_L");
+    //private int Player_Jump = Animator.StringToHash("Jump");
+    //private int Player_Fall = Animator.StringToHash("Falling");
+    //private int Player_Land = Animator.StringToHash("Landing");
+    //private int Player_Stop = Animator.StringToHash("Stopping");
 
-
-    private int currentState;
+    //private Vector2 playerVelocity;
     private bool playJump_Anim = false, moving = false;
+    internal LizzyStates state = LizzyStates.idle;
+
+
     // Start is called before the first frame update
     void Start()
     {
         groundLayer = LayerMask.GetMask("Ground");
-
     }
 
     // Update is called once per frame
@@ -40,75 +42,70 @@ public class LizzyMovement : MonoBehaviour
         {
             isJumpPressed = true;
         }
-        Debug.Log(isGrounded + " - jump = " + isJumpPressed);
-       
     }
 
     private void FixedUpdate()
     {
-        
         CheckIfIsGrounded();
-        
-        
-        if (x_Axis > 0)
-        {
-            rigidBody.velocity = new Vector2(speed, rigidBody.velocity.y);
-            transform.localScale = new Vector2(-1, 1);
-            //moving = true;
-        }
-        else if (x_Axis < 0)
+
+
+        if (x_Axis < 0)
         {
             rigidBody.velocity = new Vector2(-speed, rigidBody.velocity.y);
             transform.localScale = new Vector2(1, 1);
-            //moving = true;
+        }
+        else if (x_Axis > 0)
+        {
+            rigidBody.velocity = new Vector2(speed, rigidBody.velocity.y);
+            transform.localScale = new Vector2(-1, 1);
         }
 
 
         if (isJumpPressed == true && isGrounded)
         {
             rigidBody.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
+
             isJumpPressed = false;
-            playJump_Anim = true;
         }
-
-
-        //if (rigidBody.velocity.x < 0.5f && isGrounded && x_Axis == 0)
-        //{
-        //    ChangeAnimationState(Player_Stop);
-        //}
-
     }
 
     private void LateUpdate()
     {
-        if (playJump_Anim == true)
-        {
-            ChangeAnimationState(Player_Jump);
-            playJump_Anim = false;
-        }
-
-
-        else if (x_Axis != 0 && isGrounded)
-        {
-            ChangeAnimationState(Player_Run);
-        }
-
-        else if (isGrounded && rigidBody.velocity.x < 1f)
-        {
-            ChangeAnimationState(Player_Idle);
-            //moving = false;
-        }
-        
+        ChangeAnimationState();
+        animator.SetInteger("state", (int)state);
     }
 
-    private void ChangeAnimationState(int newState)
+    private void ChangeAnimationState()
     {
-        if (currentState == newState)
+        //if (rigidBody.velocity.y > 0.5f && isGrounded != true)
+        //{
+            
+        //}
+
+        if (isGrounded == true)
         {
-            return;
+            
+            if (rigidBody.velocity.y > 1f)
+            {
+                state = LizzyStates.jumping;
+            }
+            else if (state == LizzyStates.jumping && rigidBody.velocity.y < 1f)
+            {
+                state = LizzyStates.landing;
+            }
+            else if (x_Axis != 0)
+            {
+                state = LizzyStates.running;
+            }
+            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f)
+            {
+                state = LizzyStates.stopping;
+            }
+            else
+            {
+                state = LizzyStates.idle;
+            }
         }
-        animator.Play(newState);
-        currentState = newState;
     }
 
     internal bool CheckIfIsGrounded()
