@@ -38,10 +38,12 @@ public class LizzyMovement : MonoBehaviour
     {
         x_Axis = Input.GetAxisRaw("Horizontal");
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             isJumpPressed = true;
         }
+
+        Debug.Log(state);
     }
 
     private void FixedUpdate()
@@ -79,33 +81,46 @@ public class LizzyMovement : MonoBehaviour
     {
         //if (rigidBody.velocity.y > 0.5f && isGrounded != true)
         //{
-            
+
         //}
 
         if (isGrounded == true)
         {
-            
+
             if (rigidBody.velocity.y > 1f)
             {
                 state = LizzyStates.jumping;
             }
-            else if (state == LizzyStates.jumping && rigidBody.velocity.y < 1f)
+            else if (state == LizzyStates.falling && playerCollider.IsTouchingLayers(groundLayer))
             {
+                //if (rigidBody.velocity.y == 0)
+                //{
+                Debug.Log("asdsadasdasdas");
                 state = LizzyStates.landing;
+                //}               
             }
             else if (x_Axis != 0)
             {
                 state = LizzyStates.running;
             }
-            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f)
+            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f && isGrounded == true)
             {
                 state = LizzyStates.stopping;
             }
             else
             {
-                state = LizzyStates.idle;
+                if (animator.GetCurrentAnimatorStateInfo(0).IsName("Landing") || animator.GetCurrentAnimatorStateInfo(0).IsName("Stopping"))
+                {
+                    state = LizzyStates.idle;
+                }               
             }
         }
+
+        if (rigidBody.velocity.y < -2f)
+        {
+            state = LizzyStates.falling;
+        }
+        
     }
 
     internal bool CheckIfIsGrounded()
