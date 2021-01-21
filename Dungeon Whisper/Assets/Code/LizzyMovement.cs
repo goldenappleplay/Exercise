@@ -102,7 +102,7 @@ public class LizzyMovement : MonoBehaviour
             {
                 state = LizzyStates.running;
             }
-            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f && isGrounded == true && state == LizzyStates.running)
+            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f && animator.GetCurrentAnimatorStateInfo(0).IsName("Run_L"))
             {
                 state = LizzyStates.stopping;
             }
@@ -115,7 +115,7 @@ public class LizzyMovement : MonoBehaviour
             }
         }
 
-        if (rigidBody.velocity.y < -2f && animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+        if (rigidBody.velocity.y < -2f && animator.GetCurrentAnimatorStateInfo(0).IsName("Jump") || rigidBody.velocity.y < -2f && animator.GetCurrentAnimatorStateInfo(0).IsName("Run_L"))
         {
             state = LizzyStates.falling;
         }
