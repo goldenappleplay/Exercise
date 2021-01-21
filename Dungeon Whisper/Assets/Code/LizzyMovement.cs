@@ -115,7 +115,7 @@ public class LizzyMovement : MonoBehaviour
             }
         }
 
-        if (rigidBody.velocity.y < -2f)
+        if (rigidBody.velocity.y < -2f && animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
         {
             state = LizzyStates.falling;
         }
