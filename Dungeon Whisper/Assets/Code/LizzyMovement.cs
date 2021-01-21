@@ -63,7 +63,7 @@ public class LizzyMovement : MonoBehaviour
         }
 
 
-        if (isJumpPressed == true && isGrounded)
+        if (isJumpPressed == true)
         {
             rigidBody.AddForce(Vector2.up * jumpHeight, ForceMode2D.Impulse);
 
@@ -91,19 +91,18 @@ public class LizzyMovement : MonoBehaviour
             {
                 state = LizzyStates.jumping;
             }
-            else if (state == LizzyStates.falling && playerCollider.IsTouchingLayers(groundLayer))
+            else if (animator.GetCurrentAnimatorStateInfo(0).IsName("Falling") && state == LizzyStates.falling && playerCollider.IsTouchingLayers(groundLayer))
             {
                 //if (rigidBody.velocity.y == 0)
                 //{
-                Debug.Log("asdsadasdasdas");
                 state = LizzyStates.landing;
                 //}               
             }
-            else if (x_Axis != 0)
+            else if ((x_Axis != 0 && animator.GetCurrentAnimatorStateInfo(0).IsName("Landing")) || (x_Axis != 0 && animator.GetCurrentAnimatorStateInfo(0).IsName("Idle_L")) || (x_Axis != 0 && animator.GetCurrentAnimatorStateInfo(0).IsName("Stopping")))
             {
                 state = LizzyStates.running;
             }
-            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f && isGrounded == true)
+            else if (x_Axis == 0 && Math.Abs(rigidBody.velocity.x) < 3f && Math.Abs(rigidBody.velocity.x) > 1f && isGrounded == true && state == LizzyStates.running)
             {
                 state = LizzyStates.stopping;
             }
